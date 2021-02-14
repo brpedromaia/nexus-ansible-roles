@@ -31,27 +31,21 @@
 
 - name: Check cache folder exists
   stat:
-    path: "{{ cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
+    path: "{{ cache_path }}"
   register: cache_path
   tags: install
 
-- name: Check that the nexus tarball on cache folder
+- name: Check nexus tarball exists
   stat:
     path: "{{ cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
-  register: nexus_cache_path
+  register: nexus_tarball
   tags: install
 
-- name: Ensure the cache directory exists
+- name: Ensure the nexus-ansible-roles cache directory exists
   file:
-    path: "{{ cache_path }}"
+    path: "{{ cache_path }}/nexus-ansible-roles"
     state: directory
-  when: not nexus_cache_path.stat.exists
-  tags: install
-
-- name: Check that the nexus tarball on cache folder
-  stat:
-    path: "{{ cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
-  register: nexus_check
+  when: not nexus_tarball.stat.exists
   tags: install
 
 - name: "Create nexus directory on {{ nexus_path }}"
@@ -93,12 +87,12 @@
   delay: 3
   register: nexus_result
   until: nexus_result is succeeded
-  when: not nexus_check.stat.exists and cache_path.stat.exists
+  when: not nexus_check.stat.exists 
   tags: install
 
 - name: Move nexus tarball to cache folder
-  shell: "mv -f {{ nexus_path }}/nexus-{{nexus_version}}-unix.tar.gz {{ cache_path }}"
-  when: not nexus_check.stat.exists
+  shell: "mv -f {{ nexus_path }}/nexus-{{nexus_version}}-unix.tar.gz {{ cache_path }}/nexus-ansible-roles"
+  when: not nexus_tarball.stat.exists and cache_path.stat.exists
   tags: install
  
 
