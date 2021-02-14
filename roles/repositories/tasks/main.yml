@@ -1,0 +1,36 @@
+---
+
+
+- name: Ensure nexus is running
+  wait_for:
+    host: "{{ nexus_ip }}"
+    port: "80"
+    timeout: 30
+
+- name: Create blobstores
+  uri:
+    url: "http://{{ nexus_ip }}/service/rest/v1/blobstores/file"
+    user: "{{ nexus_api_usr }}"
+    password: "{{ nexus_api_psw }}"
+    force_basic_auth: yes
+    method: POST
+    body_format: json
+    body: "{{ lookup('template', '{{ role_path }}/templates/create-blobstore.j2' ) }}"
+    status_code: 204
+  with_items: "{{ add_repositories }}"
+  ignore_errors: yes 
+
+- name: Create Repositories
+  uri:
+    url: "http://{{ nexus_ip }}/{{ item.url_api }}"
+    user: "{{ nexus_api_usr }}"
+    password: "{{ nexus_api_psw }}"
+    force_basic_auth: yes
+    method: POST
+    body_format: json
+    body: "{{ lookup('template', '{{ role_path }}/templates/{{ item.template}}' ) }}"
+    status_code: 201
+  with_items: "{{ add_repositories }}"
+  ignore_errors: yes 
+
+#EOF

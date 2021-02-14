@@ -7,4 +7,4 @@
   - { role: prepare, tags: ["install"] }
   - { role: install, tags: ["install"] }
   - { role: config, tags: ["install"] }
-  # - { role: repositories, tags: ["install"] }
+  - { role: repositories, tags: ["install"] }

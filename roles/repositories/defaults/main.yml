@@ -1,0 +1,18 @@
+---
+
+
+add_repositories:
+- name: "yum-centos"
+  url_api: "service/rest/v1/repositories/yum/proxy"
+  url_proxy: "http://mirror.centos.org/centos/"
+  template: "create-yum-proxy-json.j2"
+- name: "yum-epel7"
+  url_api: "service/rest/v1/repositories/yum/proxy"
+  url_proxy: "https://dl.fedoraproject.org/pub/epel/7/x86_64"
+  template: "create-yum-proxy-json.j2"
+- name: "yum-epel8"
+  url_api: "service/rest/v1/repositories/yum/proxy"
+  url_proxy: "https://dl.fedoraproject.org/pub/epel/8/Everything/x86_64/"
+  template: "create-yum-proxy-json.j2"
+
+#EOF
