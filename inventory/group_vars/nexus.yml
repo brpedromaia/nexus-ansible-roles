@@ -12,3 +12,4 @@ nexus_tcp_ports:
   - 5000
 
 cache_path: "/vagrant/.bootstrap/cache"
+nexus_cache_path: "/vagrant/.bootstrap/cache/nexus-ansible-roles"

@@ -3,7 +3,7 @@
 
 - name: "Extract nexus-{{nexus_version}}-unix.tar.gz to {{ nexus_path }}"
   unarchive:
-    src: "{{ cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
+    src: "{{ nexus_cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
     dest: "{{ nexus_path }}"
     owner: "{{ nexus_user }}"
     keep_newer: yes
