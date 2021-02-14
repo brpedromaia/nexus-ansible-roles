@@ -1,0 +1,6 @@
+all:
+    hosts: all-hosts
+    children:
+        nexus:
+            hosts:
+                nexus-master:

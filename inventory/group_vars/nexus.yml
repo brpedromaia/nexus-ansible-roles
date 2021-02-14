@@ -1,0 +1,14 @@
+nexus_user: nexus
+nexus_home: /home/nexus
+nexus_group: nexus
+nexus_version: '3.29.2-02'
+
+nexus_api_usr: 'admin'
+nexus_api_psw: 'admin123'
+nexus_ip: "{{ansible_eth1.ipv4.address}}"
+nexus_path: "{{ nexus_home }}/nexus"
+nexus_tcp_ports:
+  - 80
+  - 5000
+
+cache_path: "/vagrant/playbooks/nexus-ansible-roles/cache"

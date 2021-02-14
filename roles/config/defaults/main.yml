@@ -1,0 +1,4 @@
+change_admin_psw:
+  - name: "change_admin_psw"
+    content: "security.securitySystem.changePassword('admin', args)"
+    args: "{{ nexus_api_psw }}"

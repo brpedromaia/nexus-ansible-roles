@@ -1,0 +1,57 @@
+---
+
+
+- name: Waiting for initial admin password
+  wait_for:
+    path: "{{ nexus_path }}/sonatype-work/nexus3/admin.password"
+    state: present
+    timeout: 600
+  
+- name: Get initial admin password
+  shell: "cat {{ nexus_path }}/sonatype-work/nexus3/admin.password"
+  retries: 5
+  delay: 15
+  register: nexus_old_password
+  until: nexus_old_password.rc == 0
+
+- name: Waiting for nexus wake up
+  wait_for:
+    host: "{{ nexus_ip }}"
+    port: "80"
+  retries: 30
+  delay: 30
+  register: nexus_http
+  until: nexus_http is succeeded
+
+- name: Create script to change admin password on nexus
+  uri:
+    url: "http://{{ nexus_ip}}:80/service/rest/v1/script"
+    user: "admin"
+    password: "{{ nexus_old_password.stdout }}"
+    force_basic_auth: yes
+    method: POST
+    body_format: json
+    body: |
+      {
+        "name": "{{ item.name }}",
+        "type": "groovy",
+        "content": "{{ item.content }}"
+      }
+    status_code: 204
+  with_items: "{{ change_admin_psw }}"
+
+- name: Apply script to change admin password on nexus
+  uri:
+    url: "http://{{ nexus_ip}}:80/service/rest/v1/script/{{ item.name }}/run"
+    user: "admin"
+    password: "{{ nexus_old_password.stdout }}"
+    force_basic_auth: yes
+    method: POST
+    headers:
+         Content-Type: "text/plain"
+    body: "{{ item.args }}"
+    status_code: 200
+  with_items: "{{ change_admin_psw }}"
+
+
+#EOF

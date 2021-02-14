@@ -1,0 +1,4 @@
+nfs_packages:
+  - centos-release-gluster8
+  - glusterfs
+  - glusterfs-fuse

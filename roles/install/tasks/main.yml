@@ -1,0 +1,67 @@
+---
+
+
+- name: "Extract nexus-{{nexus_version}}-unix.tar.gz to {{ nexus_path }}"
+  unarchive:
+    src: "{{ cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
+    dest: "{{ nexus_path }}"
+    owner: "{{ nexus_user }}"
+    keep_newer: yes
+    remote_src: yes
+
+- name: Rename folder extracted to nexus (default)
+  shell: |
+    mv -f {{ nexus_path }}/nexus-*/ {{ nexus_path }}/nexus
+
+- name: Recursively change ownership of a directory
+  file:
+    path: "{{ nexus_path }}"
+    state: directory
+    recurse: yes
+    owner: "{{ nexus_user }}"
+    group: "{{ nexus_user }}"
+
+- name: "Configuring nexus to run as {{ nexus_user }}"
+  lineinfile:
+    path: "{{ nexus_path }}/nexus/bin/nexus.rc"
+    line: run_as_user="{{ nexus_user }}"
+    create: yes
+
+- name: Allow nexus api to create and run scripts 
+  lineinfile:
+    path: "{{ nexus_path }}/nexus/etc/nexus-default.properties"
+    line: |
+      nexus.scripts.allowCreation=true
+      nexus.onboarding.enabled=false
+    create: yes
+
+- name: Create nexus service
+  lineinfile:
+    path: /etc/systemd/system/nexus.service
+    line: "{{ lookup('template', '{{ item }}' ) }}"
+    create: yes
+  with_items:
+    - "{{ role_path }}/templates/nexus.service.j2"
+    
+- name: Ensure the nexus default port is 80
+  lineinfile:
+    path: "{{ nexus_path }}/nexus/etc/nexus-default.properties"
+    regexp: '^application-port='
+    insertafter: '^#application-port='
+    line: application-port=80
+
+- name: Enable nexus service
+  service:
+    name: "nexus"
+    enabled: yes
+
+- name: Restart services
+  service:
+    name: "{{ item }}"
+    state: restarted
+  with_items:
+    - nexus
+    - firewalld
+
+
+#EOF

@@ -1,0 +1,93 @@
+---
+
+
+- name: Install Java 8
+  package:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items: "{{ prepare_packages }}"
+
+- name: "{{ nexus_group }} group creation"
+  group:
+    name: "{{ nexus_group }}"
+    state: present
+    
+- name: Creation and nexus user setup
+  user:
+    name: "{{ nexus_user }}"
+    comment: nexus user
+    groups: "{{ nexus_group }}"
+    append: yes
+    create_home: true
+    remove: true
+
+- name: Creation and nexus directory setup
+  file:
+    path: "{{ nexus_path }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ nexus_user }}"
+
+- name: Check that the nexus tarball on cache folder
+  stat:
+    path: "{{ cache_path }}/nexus-{{nexus_version}}-unix.tar.gz"
+  register: nexus_check
+  tags: install
+
+- name: Ensure the cache directory exists
+  file:
+    path: "{{ cache_path }}"
+    state: directory
+  when: not nexus_check.stat.exists
+  tags: install
+
+- name: "Create nexus directory on {{ nexus_path }}"
+  file:
+    path: "{{ nexus_path }}"
+    state: directory
+
+- name: Ensure firewalld service is running
+  service: 
+    name: firewalld
+    state: started
+    enabled: yes
+
+- name: Enable firewall for nexus service
+  firewalld:
+    port: "{{ item }}/tcp"
+    permanent: yes
+    state: enabled
+  with_items: "{{ nexus_tcp_ports }}"
+
+- name: Seting SELinux in permissive mode, logging actions that would be blocked.
+  selinux:
+    policy: targeted
+    state: enforcing
+    
+- name: Remove 1024 port limit
+  sysctl:
+    name: net.ipv4.ip_unprivileged_port_start
+    value: '0'
+    sysctl_set: yes
+    state: present
+    reload: yes
+
+- name: Download nexus tarball latest
+  get_url:
+    url: "https://download.sonatype.com/nexus/3/nexus-{{nexus_version}}-unix.tar.gz"
+    dest: "{{ nexus_path }}/nexus-{{nexus_version}}-unix.tar.gz"
+  retries: 10
+  delay: 3
+  register: nexus_result
+  until: nexus_result is succeeded
+  when: not nexus_check.stat.exists
+  tags: install
+
+- name: Move nexus tarball to cache folder
+  shell: "mv -f {{ nexus_path }}/nexus-{{nexus_version}}-unix.tar.gz {{ cache_path }}"
+  when: not nexus_check.stat.exists
+  tags: install
+ 
+
+#EOF
