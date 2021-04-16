@@ -11,7 +11,7 @@ nexus_tcp_ports:
   - 80
   - 5000
 
-cache_path: "/vagrant/.bootstrap/cache"
-nexus_cache_path: "/vagrant/.bootstrap/cache/nexus-ansible-roles"
+cache_path: "{{nexus_path}}/cache"
+nexus_cache_path: "{{cache_path}}/nexus-ansible-roles"
 
 blobstore_path: /home/nexus/blobstores
