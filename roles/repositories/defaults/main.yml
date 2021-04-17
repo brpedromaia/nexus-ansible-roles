@@ -2,9 +2,13 @@
 
 
 add_repositories:
-- name: "yum-centos"
+- name: "yum-centos7"
   url_api: "service/rest/v1/repositories/yum/proxy"
-  url_proxy: "http://mirror.centos.org/centos/"
+  url_proxy: "http://mirror.centos.org/centos/7/os/x86_64/"
+  template: "create-yum-proxy-json.j2"
+- name: "yum-centos8"
+  url_api: "service/rest/v1/repositories/yum/proxy"
+  url_proxy: "http://mirror.centos.org/centos/8/BaseOS/x86_64/os/"
   template: "create-yum-proxy-json.j2"
 - name: "yum-epel7"
   url_api: "service/rest/v1/repositories/yum/proxy"
