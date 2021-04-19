@@ -15,7 +15,7 @@
     force_basic_auth: yes
     method: POST
     body_format: json
-    body: "{{ lookup('template', '{{ role_path }}/templates/create-blobstore.j2' ) }}"
+    body: "{{ lookup('template', '{{ role_path }}/templates/blobstore.j2' ) }}"
     status_code: 204
   with_items: "{{ add_repositories }}"
   ignore_errors: yes 
