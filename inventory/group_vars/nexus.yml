@@ -9,7 +9,8 @@ nexus_ip: "{{ansible_eth1.ipv4.address}}"
 nexus_path: "{{ nexus_home }}/nexus"
 nexus_tcp_ports:
   - 80
-  - 5000
+  - 5100 #docker registry port
+  - 5200 #docker registry port
 
 cache_path: "{{nexus_path}}/cache"
 nexus_cache_path: "{{cache_path}}/nexus-ansible-roles"
