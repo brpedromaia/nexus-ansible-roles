@@ -1,0 +1,20 @@
+{
+  "name": "{{ item.name }}",
+  "online": true,
+  "storage": {
+    "blobStoreName": "{{ item.name }}",
+    "strictContentTypeValidation": true,
+    "writePolicy": "allow_once"
+  },
+  "cleanup": {
+    "policyNames": [
+      "string"
+    ]
+  },
+  "docker": {
+    "v1Enabled": false,
+    "forceBasicAuth": true,
+    "httpPort": {{ item.ports.http }},
+    "httpsPort": {{ item.ports.https }}
+  }
+}
