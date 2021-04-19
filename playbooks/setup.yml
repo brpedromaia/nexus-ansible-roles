@@ -3,7 +3,6 @@
 - hosts: nexus
   become: true
   roles:
-  # - { role: persistence, tags: ["install"] }
   - { role: prepare, tags: ["install"] }
   - { role: install, tags: ["install"] }
   - { role: config, tags: ["install"] }
